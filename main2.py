@@ -6,17 +6,32 @@ from pygame.locals import *
 SCREEN_WIDTH = 200
 SCREEN_HEIGHT = 200
 BOX_SIZE = 20
-MARGIN = 5
 BOX_N = SCREEN_HEIGHT * SCREEN_HEIGHT / BOX_SIZE ** 2
 white = [255, 255, 255]
 red = [255, 0, 0]
 black = [0, 0, 0]
 
+
+class box:
+    def __init__(self, px, py, state = 0):
+        self.px = px
+        self.py = py
+        self.state = state
+        self.future = 0
+
+    def update_state(self):
+        self.state = self.future
+        self.future = 0
+
 def draw_table(screen):
-    for row in range (int(SCREEN_WIDTH / BOX_SIZE)):
-        for column in range (int(SCREEN_HEIGHT / BOX_SIZE)):
-            rect = (MARGIN + BOX_SIZE) * (column), (MARGIN + BOX_SIZE) * row, BOX_SIZE, BOX_SIZE
-            pygame.draw.rect(screen, white, rect)
+    i = 1
+    while i < SCREEN_HEIGHT:
+        i += BOX_SIZE
+        pygame.draw.line(screen, white, (0, i), (SCREEN_WIDTH, i))
+    i = 1
+    while i < SCREEN_WIDTH:
+        i += BOX_SIZE
+        pygame.draw.line(screen, white, (i, 0), (i, SCREEN_HEIGHT))
 
 
 def main():
