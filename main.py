@@ -7,8 +7,8 @@ import time
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 800
-BOX_SIZE = 20
-MARGIN = 3
+BOX_SIZE = 5
+MARGIN = 1
 BOX_N = SCREEN_HEIGHT * SCREEN_HEIGHT / BOX_SIZE ** 2
 
 ROWS = 0
@@ -51,23 +51,34 @@ def draw_table(screen, arr):
             px += MARGIN + BOX_SIZE
         py += MARGIN + BOX_SIZE
 
+def sumNeighbors(M, x ,y):
+    l = []
+    for i in range(max(0,x-1),x+2): # max(0,x-1), such that no negative values in range()
+        for j in range(max(0,y-1),y+2):
+            try:
+                t = M[i][j]
+                l.append(t)
+            except IndexError: # if entry doesn't exist
+                pass
+    return sum(l)-M[x][y] # exclude the entry itself
+
+
 def calc_state(arr):
     #Add border to array
-    old = np.pad(arr, pad_width=1, mode='constant', constant_values=0)
+   # old = np.pad(arr, pad_width=1, mode='constant', constant_values=0)
+    old = np.copy(arr)
     alives = 0
-    for y in range (0, COLS):
-        for x in range (0, ROWS):
-            for i in range(-1,1):
-                for j in range(-1,1):
-                    if (j == 0 and i == 0):
-                        continue
-                    alives+=old[y+i][x+j]
-            if alives == 3:
-                print("entro")
-                arr[y][x] = 1
-            elif old[y][x] == 1 & (alives != 2 & alives != 3):
-                arr[y][x] = 0
+    for y in range (0, ROWS):
+        for x in range (0, COLS):
             alives = 0
+            alives = sumNeighbors(old, y, x)
+    #        print(f'{y} {x} => {alives}')
+            if alives == 3:
+                arr[y][x] = 1
+            elif old[y][x] == 1 and(alives == 2 or alives == 3):
+                arr[y][x] = 1
+            else:
+                arr[y][x] = 0
     return arr
 
 
@@ -78,17 +89,23 @@ def main():
     pygame.display.set_caption("Amo a ve")
 
     arr = np.random.randint(2, size=(int(ROWS), int(COLS)))
-    print(str(arr))
+    # arr = np.zeros((ROWS,COLS), dtype=int)
+    # arr[3][3] = 0
+    # arr[3][4] = 1
+    # arr[4][5] = 1
+    # arr[5][3] = 1
+    # arr[5][4] = 1
+    # arr[5][5] = 1
+
     screen.fill(black)
    # draw_table(screen)
     draw_table(screen, arr)
-    calc_state(arr)
 
     while True:
         arr = calc_state(arr)
         draw_table(screen, arr)
         pygame.display.flip()
-        time.sleep(1)
+        #time.sleep(0.2)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
