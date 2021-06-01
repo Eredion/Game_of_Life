@@ -72,10 +72,9 @@ def calc_state(arr):
         for x in range (0, COLS):
             alives = 0
             alives = sumNeighbors(old, y, x)
-    #        print(f'{y} {x} => {alives}')
-            if alives == 3:
+            if old[y][x] == 0 and alives == 3:
                 arr[y][x] = 1
-            elif old[y][x] == 1 and(alives == 2 or alives == 3):
+            elif old[y][x] == 1 and(alives >= 2 and alives <= 3):
                 arr[y][x] = 1
             else:
                 arr[y][x] = 0
@@ -105,7 +104,7 @@ def main():
         arr = calc_state(arr)
         draw_table(screen, arr)
         pygame.display.flip()
-        #time.sleep(0.2)
+        time.sleep(0.1)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
